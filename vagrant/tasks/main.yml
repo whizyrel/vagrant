@@ -1,0 +1,36 @@
+---
+# tasks file for vagrant
+- name: Gets release codename (short).
+  ansible.builtin.command: lsb_release -cs
+  register: release_name
+
+- name: Prints OS release name.
+  ansible.builtin.debug:
+    var: release_name
+
+- name: Prints user name.
+  ansible.builtin.debug:
+    var: lookup('ansible.builtin.env', 'USER')
+
+- name: Adds apt key.
+  ansible.builtin.apt_key:
+    url: https://apt.releases.hashicorp.com/gpg
+    state: present
+  # tags: never
+
+- name: Adds repository.
+  ansible.builtin.apt_repository:
+    repo: "deb [arch=amd64] https://apt.releases.hashicorp.com {{ release_name.stdout }} main"
+    state: present
+  # tags: never
+
+- name: Install Vagrant.
+  ansible.builtin.apt:
+    update_cache: yes
+    pkg: vagrant
+    state: present
+  become: true
+  become_user: "{{ lookup('ansible.builtin.env', 'USR') }}"
+  become_method: sudo
+  # tags: never
+

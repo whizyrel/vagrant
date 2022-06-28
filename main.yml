@@ -1,0 +1,15 @@
+---
+- name: Vagrant Installation
+  # INFO Not working with -i inventory.yml
+  hosts: localhost
+  tasks:
+    # - name: Prints all facts.
+    #   ansible.builtin.debug:
+    #     var: "ansible_facts"
+  roles:
+    - role: virtualbox
+      when: "ansible_facts['os_family'] == 'Debian'"
+
+    - role: vagrant
+      when: "ansible_facts['os_family'] == 'Debian'"
+      tags: never

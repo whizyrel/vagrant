@@ -1,0 +1,23 @@
+---
+# tasks file for virtualbox
+- name: Downloads Key file.
+  ansible.builtin.get_url:
+    url: https://www.virtualbox.org/download/oracle_vbox_2016.asc
+    dest: ./oracle_vbox_2016.asc
+
+- name: Register key.
+  ansible.builtin.command: echo oracle_vbox_2016.asc | sudo gpg --dearmor --yes --output /usr/share/keyrings/oracle-virtualbox-2016.gpg
+  become: true
+  become_user: "{{ lookup('ansible.builtin.env', 'USR') }}"
+  become_method: sudo
+
+- name: Install VirtualBox.
+  ansible.builtin.apt:
+    update_cache: yes
+    # INFO does not require version number to be added
+    pkg: virtualbox
+    state: present
+  become: true
+  become_user: "{{ lookup('ansible.builtin.env', 'USR') }}"
+  become_method: sudo
+  # tags: never
